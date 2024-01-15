@@ -45,11 +45,9 @@ public class DataSort {
         }
     }
 
-    public static int elementsCount;
-
-    public static void shortStat(String[] filename) {
+    /*public static void shortStat(String[] filename) {
         for (String string : filename) {
-            elementsCount = 0;
+            int elementsCount = 0;
             try (Scanner scanner = new Scanner(new FileInputStream(string))) {
                 if (scanner.hasNextInt()) {
                     while (scanner.hasNext()) {
@@ -75,12 +73,85 @@ public class DataSort {
 
             System.out.println("Количество записанных элементов в файле " + string + " равно: " + elementsCount);
         }
+    }*/
+
+    public static void stat(String[] filename, String statType) {
+        for (String string : filename) {
+            int elementsCount = 0;
+            double average = 0;
+            int intSum = 0;
+            int intMax = 0;
+            int intMin = 0;
+
+            double doubleAverage = 0;
+            double doubleSum = 0;
+            double doubleMax = 0;
+            double doubleMin = 0;
+
+            String shortString = "";
+            String longString = "";
+
+            boolean stringFile = false;
+            boolean intFile = false;
+            boolean doubleFile = false;
+
+            try (Scanner scanner = new Scanner(new FileInputStream(string))) {
+                if (scanner.hasNextInt()) {
+                    int intNumber = scanner.nextInt();
+                    intMax = intNumber;
+                    intMin = intNumber;
+                    elementsCount++;
+
+                    while (scanner.hasNext()) {
+                        intNumber = scanner.nextInt();
+                        elementsCount++;
+                        intSum += intNumber;
+                        if(intMin > intNumber){
+                            intMin = intNumber;
+                        }
+
+                        if(intMax < intNumber){
+                            intMax = intNumber;
+                        }
+                    }
+
+                    average = (double) intSum / elementsCount;
+                    intFile = true;
+                } else if (scanner.hasNextDouble()) {
+                    while (scanner.hasNext()) {
+                        scanner.nextDouble();
+                        elementsCount++;
+                    }
+                } else if (scanner.hasNextLine()) {
+                    while (scanner.hasNext()) {
+                        scanner.nextLine();
+                        elementsCount++;
+                    }
+                } else {
+                    break;
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            if(statType.equals("-s")){
+                System.out.println("Количество записанных элементов в файле " + string + " равно: " + elementsCount + ".\n");
+            }else if(statType.equals("-f") && intFile){
+                System.out.println("Количество записанных элементов в файле " + string + " равно: " + elementsCount);
+                System.out.println("Сумма записанных элементов в файле " + string + " равна: " + intSum);
+                System.out.println("Среднее значение записанных элементов в файле " + string + " равна: " + average);
+                System.out.println("Минимальное значение записанных элементов в файле " + string + " равна: " + intMin);
+                System.out.println("Максимальное значение записанных элементов в файле " + string + " равна: " + intMax + ".\n");
+            }else {
+                System.out.println("Ошибка статистики");
+            }
+        }
     }
 
     public static void main(String[] args) throws FileNotFoundException {
         Locale.setDefault(new Locale("en", "US"));
         openFile("src/input.txt");
         String[] strings = new String[]{"example.txt", "example1.txt", "example2.txt"};
-        shortStat(strings);
+        stat(strings, "-f");
     }
 }
