@@ -5,12 +5,12 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class DataSort {
-    public static void openFile(String filename) throws FileNotFoundException {
+    public static void openFile(String filename) {
         try (Scanner scanner = new Scanner(new FileInputStream(filename))) {
             while (scanner.hasNext()) {
                 if (scanner.hasNextInt()) {
                     try {
-                        FileWriter writer = new FileWriter("example.txt", true);
+                        FileWriter writer = new FileWriter("integers.txt", true);
                         int intNumber = scanner.nextInt();
                         writer.write(Integer.toString(intNumber));
                         writer.write("\n");
@@ -20,7 +20,7 @@ public class DataSort {
                     }
                 } else if (scanner.hasNextDouble()) {
                     try {
-                        FileWriter writer = new FileWriter("example1.txt", true);
+                        FileWriter writer = new FileWriter("floats.txt", true);
                         double floatNumber = scanner.nextDouble();
                         writer.write(Double.toString(floatNumber));
                         writer.write("\n");
@@ -30,18 +30,24 @@ public class DataSort {
                     }
                 } else if (scanner.hasNextLine()) {
                     try {
-                        FileWriter writer = new FileWriter("example2.txt", true);
+                        FileWriter writer = new FileWriter("strings.txt", true);
                         String line = scanner.nextLine();
-                        writer.write(line);
-                        writer.write("\r");
+
+                        if(!line.isEmpty()){
+                            writer.write(line + "\n");
+                        }
+
                         writer.close();
                     } catch (IOException e) {
                         System.out.println("Ошибка при записи в файл");
                     }
                 } else {
+                    System.out.println("Ошибка при считывании данных с файла");
                     break;
                 }
             }
+        } catch (FileNotFoundException e){
+            System.out.println("Не удается открыть файл");
         }
     }
 
@@ -160,8 +166,30 @@ public class DataSort {
     public static void main(String[] args) throws FileNotFoundException {
         Locale.setDefault(new Locale("en", "US")); // Use for dot
         openFile("src/input.txt");
-        String[] strings = new String[]{"example.txt", "example1.txt", "example2.txt"};
+        String[] strings = new String[]{"integers.txt", "floats.txt", "strings.txt"};
+        String path = "";
         stat(strings, "-f");
         stat(strings, "-s");
+
+        for (int i = 0; i < args.length; i++) {
+            System.out.println(args[i]);
+
+            if(args[i].equals("-o") || args[i].equals("-O")){
+                System.out.println("Содержит -o");
+                path = args[i + 1];
+            }else if(args[i].equals("-p") || args[i].equals("-P")){
+                System.out.println("Содержит -p");
+
+                for(int j = 0; j < strings.length; j++){
+                    strings[j] = strings[j] + args[i + 1];
+                }
+            }else if(args[i].equals("-f") || args[i].equals("-F")){
+                System.out.println("Содержит -f");
+            }else if(args[i].equals("-s") || args[i].equals("-S")){
+                System.out.println("Содержит -s");
+            }else if(args[i].equals("-a") || args[i].equals("-A")){
+                System.out.println("Содержит -a");
+            }
+        }
     }
 }
