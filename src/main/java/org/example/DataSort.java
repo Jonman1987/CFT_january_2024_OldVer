@@ -5,10 +5,11 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class DataSort {
-    public static void openFile(String inputFilename, String[] outputFilename, String path, boolean a) {
+    public static void openFile(String inputFilename, String[] outputFilename, String path, boolean isInputOptionA, int fileNumber) {
         for (String string : outputFilename) {
             File file = new File(string);
-            if (file.exists() && !a) {
+
+            if (file.exists() && !isInputOptionA && fileNumber == 0) {
                 System.out.println("Файл найден");
                 boolean delete = file.delete();
 
@@ -39,6 +40,7 @@ public class DataSort {
                     try {
                         FileWriter writer = new FileWriter(path + outputFilename[1], true);
                         double floatNumber = scanner.nextDouble();
+
                         writer.write(Double.toString(floatNumber));
                         writer.write("\n");
                         writer.close();
@@ -104,6 +106,7 @@ public class DataSort {
                         intNumber = scanner.nextInt();
                         elementsCount++;
                         intSum += intNumber;
+
                         if (intMin > intNumber) {
                             intMin = intNumber;
                         }
@@ -126,6 +129,7 @@ public class DataSort {
                         doubleNumber = scanner.nextDouble();
                         elementsCount++;
                         doubleSum += doubleNumber;
+
                         if (doubleMin > doubleNumber) {
                             doubleMin = doubleNumber;
                         }
@@ -193,14 +197,15 @@ public class DataSort {
         String path = "";
 
         int statisticCount = 0;
-        boolean isInputA = false;
+        boolean isInputOptionA = false;
+        int inputFileCount = 0;
 
         for (int i = 0; i < args.length; i++) {
             System.out.println(args[i]);
 
             if (args[i].equals("-o") || args[i].equals("-O")) {
                 System.out.println("Содержит -o");
-                path = args[i + 1];
+                path = args[i + 1]; // Проверить директорию
             } else if (args[i].equals("-p") || args[i].equals("-P")) {
                 System.out.println("Содержит -p");
 
@@ -215,11 +220,29 @@ public class DataSort {
                 statisticCount = 2;
             } else if (args[i].equals("-a") || args[i].equals("-A")) {
                 System.out.println("Содержит -a");
-                isInputA = true;
+                isInputOptionA = true;
+            } else if (args[i].toLowerCase().contains(".txt")) {
+                inputFileCount++;
             }
         }
 
-        openFile("input.txt", outputFilenames, path, isInputA);
+        String[] inputFileNames = new String[inputFileCount];
+        int i = 0;
+
+        for (String arg : args) { //Добавить исключение для названия .txt
+            if (arg.toLowerCase().contains(".txt")) {
+                inputFileNames[i] = arg;
+                i++;
+            }
+        }
+
+        i = 0;
+
+        for (String inputFileName : inputFileNames) {
+            openFile(inputFileName, outputFilenames, path, isInputOptionA, i);
+            i++;
+        }
+
         stat(outputFilenames, path, statisticCount);
     }
 }
