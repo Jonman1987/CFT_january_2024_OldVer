@@ -21,6 +21,9 @@ public class Files {
     public static boolean isCreateIntFile = false;
     public static boolean isCreateDoubleFile = false;
     public static boolean isCreateStringFile = false;
+    public static boolean isFirstActionInt = false;
+    public static boolean isFirstActionDouble = false;
+    public static boolean isFirstActionString = false;
 
     public static boolean isStop(ListItem[] list) {
         for (ListItem listItem : list) {
@@ -32,26 +35,58 @@ public class Files {
         return true;
     }
 
-    public static void fileWriter(int line, String outputFilename, String path) {
-        boolean isFirstActionInt = false;
-
+    public static void fileWriter(int number, String outputFilename, String path) {
         try {
             FileWriter writer = new FileWriter(path + outputFilename, true);
 
-            writer.write(line + "\n");
+            if (!isFirstActionInt) {
+                intMin = number;
+                intMax = number;
+                isFirstActionInt = true;
+            }
+
+            if (intMin > number) {
+                intMin = number;
+            }
+
+            if (intMax < number) {
+                intMax = number;
+            }
+
+            intSum += number;
+            elementsCountInt++;
+            isCreateIntFile = true;
+
+            writer.write(number + "\n");
             writer.close();
         } catch (IOException e) {
             System.out.println("Ошибка при записи в файл");
         }
     }
 
-    public static void fileWriter(double line, String outputFilename, String path) {
-        boolean isFirstActionDouble = false;
-
+    public static void fileWriter(double number, String outputFilename, String path) {
         try {
             FileWriter writer = new FileWriter(path + outputFilename, true);
 
-            writer.write(line + "\n");
+            if (!isFirstActionDouble) {
+                doubleMin = number;
+                doubleMax = number;
+                isFirstActionDouble = true;
+            }
+
+            elementsCountDouble++;
+            doubleSum += number;
+            isCreateDoubleFile = true;
+
+            if (doubleMin > number) {
+                doubleMin = number;
+            }
+
+            if (doubleMax < number) {
+                doubleMax = number;
+            }
+
+            writer.write(number + "\n");
             writer.close();
         } catch (IOException e) {
             System.out.println("Ошибка при записи в файл");
@@ -59,10 +94,27 @@ public class Files {
     }
 
     public static void fileWriter(String line, String outputFilename, String path) {
-        boolean isFirstActionString = false;
+
 
         try {
             FileWriter writer = new FileWriter(path + outputFilename, true);
+
+            if (!isFirstActionString) {
+                shortString = line.length();
+                longString = line.length();
+                isFirstActionString = true;
+            }
+
+            elementsCountString++;
+            isCreateStringFile = true;
+
+            if (shortString > line.length()) {
+                shortString = line.length();
+            }
+
+            if (longString < line.length()) {
+                longString = line.length();
+            }
 
             writer.write(line + "\n");
             writer.close();
@@ -72,8 +124,8 @@ public class Files {
     }
 
     public static void checkDirectory(String[] outputFilename, String path, boolean isInputOptionA){
-        for (int i = 0; i < outputFilename.length; i++) {
-            File file = new File(path + outputFilename[i]);
+        for (String s : outputFilename) {
+            File file = new File(path + s);
 
             if (file.exists() && !isInputOptionA) {
                 System.out.println("Файл найден");
@@ -87,6 +139,45 @@ public class Files {
 
         File mkdirs = new File(path);
         mkdirs.mkdirs();
+    }
+
+    public static void stat(String[] filename, int statType) {
+        averageInt = (double) intSum / elementsCountInt;
+        averageDouble = doubleSum / elementsCountDouble;
+
+        for (String string : filename) {
+            if (statType == 2 && isCreateIntFile) {
+                System.out.println("Количество записанных элементов в файле " + string + " равно: " + elementsCountInt + ".\n");
+                isCreateIntFile = false;
+            } else if (statType == 2 && isCreateDoubleFile) {
+                System.out.println("Количество записанных элементов в файле " + string + " равно: " + elementsCountDouble + ".\n");
+                isCreateDoubleFile = false;
+            } else if (statType == 2 && isCreateStringFile) {
+                System.out.println("Количество записанных элементов в файле " + string + " равно: " + elementsCountString + ".\n");
+                isCreateStringFile = false;
+            } else if (statType == 1 && isCreateIntFile) {
+                System.out.println("Количество записанных элементов в файле " + string + " равно: " + elementsCountInt + ".");
+                System.out.println("Сумма записанных элементов в файле " + string + " равна: " + intSum + ".");
+                System.out.println("Среднее значение записанных элементов в файле " + string + " равна: " + averageInt + ".");
+                System.out.println("Минимальное значение записанных элементов в файле " + string + " равна: " + intMin + ".");
+                System.out.println("Максимальное значение записанных элементов в файле " + string + " равна: " + intMax + ".\n");
+                isCreateIntFile = false;
+            } else if (statType == 1 && isCreateDoubleFile) {
+                System.out.println("Количество записанных элементов в файле " + string + " равно: " + elementsCountDouble + ".");
+                System.out.println("Сумма записанных элементов в файле " + string + " равна: " + doubleSum + ".");
+                System.out.println("Среднее значение записанных элементов в файле " + string + " равна: " + averageDouble + ".");
+                System.out.println("Минимальное значение записанных элементов в файле " + string + " равна: " + doubleMin + ".");
+                System.out.println("Максимальное значение записанных элементов в файле " + string + " равна: " + doubleMax + ".\n");
+                isCreateDoubleFile = false;
+            } else if (statType == 1 && isCreateStringFile) {
+                System.out.println("Количество записанных строк в файле " + string + " равно: " + elementsCountString + ".");
+                System.out.println("Максимальная строка в файле " + string + " содержит: " + longString + " символов.");
+                System.out.println("Минимальная строка в файле " + string + " содержит: " + shortString + " символов.\n");
+                isCreateStringFile = false;
+            } else if (statType != 0) {
+                System.out.println("Ошибка статистики в файле " + string + ".\n");
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -115,6 +206,8 @@ public class Files {
                 if(path.charAt(path.length() - 1) != '/' ){
                     path = path + '/';
                 }
+
+
             } else if (args[i].equals("-p") || args[i].equals("-P")) {
                 System.out.println("Содержит -p");
 
@@ -193,6 +286,8 @@ public class Files {
                 throw new RuntimeException(e);
             }
         }
+
+        stat(outputFilenames, statisticCount);
     }
 }
 
