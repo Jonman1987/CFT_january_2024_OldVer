@@ -1,9 +1,7 @@
 package org.example;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
 
 public class Files {
 
@@ -17,6 +15,8 @@ public class Files {
         return true;
     }
 
+
+
     public static void main(String[] args) {
         String[] fileNames = new String[]{"input.txt", "input1.txt", "input2.txt"};
         ListItem[] conditions = new ListItem[fileNames.length];
@@ -25,26 +25,32 @@ public class Files {
             conditions[i] = new ListItem(fileNames[i], false);
         }
 
-        BufferedReader[] sources = new BufferedReader[fileNames.length];
+        Scanner[] sources = new Scanner[fileNames.length];
+
         for(int i = 0; i < fileNames.length; i++){
             try {
-                sources[i] = new BufferedReader(new FileReader(fileNames[i]));
+                sources[i] = new Scanner(new FileInputStream(fileNames[i]));
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
+
         String variable;
+
         while (!isStop(conditions)){
             try {
                 for (int i = 0; i < fileNames.length; i++) {
-                    variable = sources[i].readLine();
-                    if(variable != null){
-                        System.out.println(variable);
+                    if(sources[i].hasNextLine()){
+                        variable = sources[i].nextLine();
+
+                        if(variable != null){
+                            System.out.println(variable);
+                        }
                     }else {
                         conditions[i].setFileEnd(true);
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
