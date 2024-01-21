@@ -1,35 +1,55 @@
 package org.example;
-
-import java.io.FileInputStream;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Tmp {
-    public static int getOccurrencesCount(String fileName, String searchString) throws FileNotFoundException {
-        int occurrencesCount = 0;
-        searchString = searchString.toLowerCase();
+    public static void main(String[] args) throws FileNotFoundException {
+        BufferedReader source1 = null;
+        BufferedReader source2 = null;
+        BufferedReader source3 = null;
+        boolean isSource0HasEnd = false;
+        boolean isSource1HasEnd = false;
+        boolean isSource2HasEnd = false;
+        boolean[] endFile = new boolean[]{isSource0HasEnd, isSource1HasEnd, isSource2HasEnd};
+        String partOne = "";
+        String partTwo = "";
+        String partThree = "";
+        String[] varible = new String[] {partOne, partTwo, partThree};
+        BufferedReader[] sources = new BufferedReader[]{source1, source2, source3};
+        String[] strings = new String[] {"input1.txt", "input2.txt"};
+        for (int i = 0; i < strings.length; i++) {
+            sources[i] = new BufferedReader(new FileReader(strings[i]));
+        }
 
-        try (Scanner scanner = new Scanner(new FileInputStream(fileName))) {
-            while (scanner.hasNextLine()) {
-                int startIndex = 0;
-                String currentLine = scanner.nextLine().toLowerCase();
+        /*for (int i = strings.length; i < endFile.length; i++) {
+            endFile[i] = true;
+        }*/
 
-                while (true) {
-                    int index = currentLine.indexOf(searchString, startIndex);
-                    if (index == -1) {
-                        break;
-                    }
+        int k = 0;
+        while (!isSource0HasEnd && !isSource1HasEnd && !isSource2HasEnd) {
 
-                    startIndex = index + searchString.length();
-                    occurrencesCount++;
+            try {
+                for (int i = 0; i < strings.length; i++) {
+                    varible[i] = sources[i].readLine();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            for (int i = 0; i < strings.length; i++) {
+                if(varible[i] == null){
+                    endFile[i] = true;
                 }
             }
-        }
-        return occurrencesCount;
-    }
 
-    public static void main(String[] args) throws FileNotFoundException {
-        System.out.println("Количество вхождений равно: " + getOccurrencesCount("src/input.txt", "Привет"));
+            for (int i = strings.length; i < endFile.length; i++) {
+                endFile[i] = true;
+            }
+
+            System.out.println(partOne + "\t" + partTwo + "\t" + partThree);
+        }
     }
 }
 

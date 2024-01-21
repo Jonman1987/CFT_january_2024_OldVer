@@ -228,7 +228,7 @@ public class DataSort {
         for (String arg : args) { //Добавить исключение для названия .txt
             if (arg.toLowerCase().contains(".txt")) {
                 inputFileNames[i] = arg;
-                i++;
+                i++; 
             }
         }
 
