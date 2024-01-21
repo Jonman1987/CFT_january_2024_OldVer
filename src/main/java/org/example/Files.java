@@ -32,98 +32,67 @@ public class Files {
         return true;
     }
 
-    public static void fileWriter(int line, String outputFilename, String path, boolean isInputOptionA, int fileNumber, int iterationNumber) {
+    public static void fileWriter(int line, String outputFilename, String path) {
         boolean isFirstActionInt = false;
+
+        try {
+            FileWriter writer = new FileWriter(path + outputFilename, true);
+
+            writer.write(line + "\n");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Ошибка при записи в файл");
+        }
+    }
+
+    public static void fileWriter(double line, String outputFilename, String path) {
         boolean isFirstActionDouble = false;
+
+        try {
+            FileWriter writer = new FileWriter(path + outputFilename, true);
+
+            writer.write(line + "\n");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Ошибка при записи в файл");
+        }
+    }
+
+    public static void fileWriter(String line, String outputFilename, String path) {
         boolean isFirstActionString = false;
 
-            File file = new File(outputFilename);
+        try {
+            FileWriter writer = new FileWriter(path + outputFilename, true);
 
-            if (file.exists() && !isInputOptionA && fileNumber == 0 && iterationNumber == 0) {
+            writer.write(line + "\n");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Ошибка при записи в файл");
+        }
+    }
+
+    public static void checkDirectory(String[] outputFilename, String path, boolean isInputOptionA){
+        for (int i = 0; i < outputFilename.length; i++) {
+            File file = new File(path + outputFilename[i]);
+
+            if (file.exists() && !isInputOptionA) {
                 System.out.println("Файл найден");
                 boolean delete = file.delete();
 
                 if (delete) {
                     System.out.println("Файл удален");
                 }
-        }
-
-        File mkdirs = new File(path);
-        boolean mkdirs1 = mkdirs.mkdirs();
-
-        try {
-            FileWriter writer = new FileWriter(outputFilename, true);
-
-            writer.write(line + "\n");
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Ошибка при записи в файл");
-        }
-    }
-
-    public static void fileWriter(double line, String outputFilename, String path, boolean isInputOptionA, int fileNumber, int iterationNumber) {
-        boolean isFirstActionInt = false;
-        boolean isFirstActionDouble = false;
-        boolean isFirstActionString = false;
-
-        File file = new File(outputFilename);
-
-        if (file.exists() && !isInputOptionA && fileNumber == 0 && iterationNumber == 0) {
-            System.out.println("Файл найден");
-            boolean delete = file.delete();
-
-            if (delete) {
-                System.out.println("Файл удален");
             }
         }
 
         File mkdirs = new File(path);
-        boolean mkdirs1 = mkdirs.mkdirs();
-
-        try {
-            FileWriter writer = new FileWriter(outputFilename, true);
-
-            writer.write(line + "\n");
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Ошибка при записи в файл");
-        }
-    }
-
-    public static void fileWriter(String line, String outputFilename, String path, boolean isInputOptionA, int fileNumber, int iterationNumber) {
-        boolean isFirstActionInt = false;
-        boolean isFirstActionDouble = false;
-        boolean isFirstActionString = false;
-
-        File file = new File(outputFilename);
-
-        if (file.exists() && !isInputOptionA && fileNumber == 0 && iterationNumber == 0) {
-            System.out.println("Файл найден");
-            boolean delete = file.delete();
-
-            if (delete) {
-                System.out.println("Файл удален");
-            }
-        }
-
-        File mkdirs = new File(path);
-        boolean mkdirs1 = mkdirs.mkdirs();
-
-        try {
-            FileWriter writer = new FileWriter(outputFilename, true);
-
-            writer.write(line + "\n");
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Ошибка при записи в файл");
-        }
+        mkdirs.mkdirs();
     }
 
     public static void main(String[] args) {
         Locale.setDefault(new Locale("en", "US")); // Use for dot
 
         String[] outputFilenames = new String[]{"integers.txt", "floats.txt", "strings.txt"};
-
 
         String path = "";
         int statisticCount = 0;
@@ -136,6 +105,16 @@ public class Files {
             if (args[i].equals("-o") || args[i].equals("-O")) {
                 System.out.println("Содержит -o");
                 path = args[i + 1]; // Проверить директорию
+
+                if(path.charAt(0) == '/' ){
+                    StringBuilder sb = new StringBuilder(path);
+                    sb.deleteCharAt(0);
+                    path = sb.toString();
+                }
+
+                if(path.charAt(path.length() - 1) != '/' ){
+                    path = path + '/';
+                }
             } else if (args[i].equals("-p") || args[i].equals("-P")) {
                 System.out.println("Содержит -p");
 
@@ -187,34 +166,29 @@ public class Files {
         int intVariable;
         double doubleVariable;
 
-        int fileNumber = 0;
-        int iterationNumber = 0;
+        checkDirectory(outputFilenames, path, isInputOptionA);
 
         while (!isStop(conditions)) {
             try {
                 for (int i = 0; i < inputFileNames.length; i++) {
                     if (sources[i].hasNextInt()) {
                         intVariable = sources[i].nextInt();
-                        fileWriter(intVariable, outputFilenames[0], path, isInputOptionA, fileNumber, iterationNumber);
+                        fileWriter(intVariable, outputFilenames[0], path);
                     } else if ((sources[i].hasNextDouble())) {
                         doubleVariable = sources[i].nextDouble();
-                        fileWriter(doubleVariable, outputFilenames[1], path, isInputOptionA, fileNumber, iterationNumber);
+                        fileWriter(doubleVariable, outputFilenames[1], path);
                     } else if (sources[i].hasNextLine()) {
                         stringVariable = sources[i].nextLine();
 
                         if (stringVariable != null) {
                             if (!stringVariable.isEmpty()) {
-                                fileWriter(stringVariable, outputFilenames[2], path, isInputOptionA, fileNumber, iterationNumber);
+                                fileWriter(stringVariable, outputFilenames[2], path);
                             }
                         }
                     } else {
                         conditions[i].setFileEnd(true);
                     }
-
-                    fileNumber++;
                 }
-
-                iterationNumber++;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
