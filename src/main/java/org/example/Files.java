@@ -60,7 +60,7 @@ public class Files {
             writer.write(number + "\n");
             writer.close();
         } catch (IOException e) {
-            System.out.println("Ошибка при записи в файл");
+            System.out.println("Ошибка при записи в файл\n");
         }
     }
 
@@ -89,13 +89,11 @@ public class Files {
             writer.write(number + "\n");
             writer.close();
         } catch (IOException e) {
-            System.out.println("Ошибка при записи в файл");
+            System.out.println("Ошибка при записи в файл\n");
         }
     }
 
     public static void fileWriter(String line, String outputFilename, String path) {
-
-
         try {
             FileWriter writer = new FileWriter(path + outputFilename, true);
 
@@ -119,21 +117,16 @@ public class Files {
             writer.write(line + "\n");
             writer.close();
         } catch (IOException e) {
-            System.out.println("Ошибка при записи в файл");
+            System.out.println("Ошибка при записи в файл\n");
         }
     }
 
-    public static void checkDirectory(String[] outputFilename, String path, boolean isInputOptionA){
+    public static void checkDirectory(String[] outputFilename, String path, boolean isInputOptionA) {
         for (String s : outputFilename) {
             File file = new File(path + s);
 
             if (file.exists() && !isInputOptionA) {
-                System.out.println("Файл найден");
                 boolean delete = file.delete();
-
-                if (delete) {
-                    System.out.println("Файл удален");
-                }
             }
         }
 
@@ -174,8 +167,6 @@ public class Files {
                 System.out.println("Максимальная строка в файле " + string + " содержит: " + longString + " символов.");
                 System.out.println("Минимальная строка в файле " + string + " содержит: " + shortString + " символов.\n");
                 isCreateStringFile = false;
-            } else if (statType != 0) {
-                System.out.println("Ошибка статистики в файле " + string + ".\n");
             }
         }
     }
@@ -191,37 +182,50 @@ public class Files {
         int inputFileCount = 0;
 
         for (int i = 0; i < args.length; i++) {
-            System.out.println(args[i]);
-
             if (args[i].equals("-o") || args[i].equals("-O")) {
-                System.out.println("Содержит -o");
-                path = args[i + 1]; // Проверить директорию
+                try {
+                    path = args[i + 1];
 
-                if(path.charAt(0) == '/' ){
-                    StringBuilder sb = new StringBuilder(path);
-                    sb.deleteCharAt(0);
-                    path = sb.toString();
+                    if (path.charAt(0) != '-') {
+                        if (path.charAt(0) == '/') {
+                            StringBuilder sb = new StringBuilder(path);
+                            sb.deleteCharAt(0);
+                            path = sb.toString();
+                        }
+
+                        if (path.charAt(path.length() - 1) != '/') {
+                            path = path + '/';
+                        }
+                    } else {
+                        path = "";
+                        System.out.println("Внимание: Вы не указали путь после команды -o. Файлы сохранены в текущую папку\n");
+                    }
+                }catch (Exception e){
+                    System.out.println("Ошибка: Отсутствуют аргументы параметра -o\n");
                 }
-
-                if(path.charAt(path.length() - 1) != '/' ){
-                    path = path + '/';
-                }
-
-
             } else if (args[i].equals("-p") || args[i].equals("-P")) {
-                System.out.println("Содержит -p");
-
-                for (int j = 0; j < outputFilenames.length; j++) {
-                    outputFilenames[j] = args[i + 1] + outputFilenames[j];
+                try {
+                    if (args[i + 1].charAt(0) == '-') {
+                        System.out.println("Внимание: Вы не указали префикс названия файла после команды -p. Файлы сохранены с именем по умолчанию\n");
+                    } else if (args[i + 1].toLowerCase().contains(".txt")) {
+                        System.out.println("Внимание: Вы указали название файла вместо префикса. Файлы сохранены с именем по умолчанию\n");
+                    } else if (args[i + 1].toLowerCase().contains(".") || args[i + 1].toLowerCase().contains("*") || args[i + 1].toLowerCase().contains("/")
+                            || args[i + 1].toLowerCase().contains("?") || args[i + 1].toLowerCase().contains(":") || args[i + 1].toLowerCase().contains("|")
+                            || args[i + 1].toLowerCase().contains("\"") || args[i + 1].toLowerCase().contains("<") || args[i + 1].toLowerCase().contains(">")) {
+                        System.out.println("Внимание: Вы указали префикс названия файла с использованием спецсимвола. Файлы сохранены с именем по умолчанию\n");
+                    } else {
+                        for (int j = 0; j < outputFilenames.length; j++) {
+                            outputFilenames[j] = args[i + 1] + outputFilenames[j];
+                        }
+                    }
+                }catch (Exception e){
+                    System.out.println("Ошибка: Отсутствуют аргументы параметра -p\n");
                 }
             } else if (args[i].equals("-f") || args[i].equals("-F")) {
-                System.out.println("Содержит -f");
                 statisticCount = 1;
             } else if (args[i].equals("-s") || args[i].equals("-S")) {
-                System.out.println("Содержит -s");
                 statisticCount = 2;
             } else if (args[i].equals("-a") || args[i].equals("-A")) {
-                System.out.println("Содержит -a");
                 isInputOptionA = true;
             } else if (args[i].toLowerCase().contains(".txt")) {
                 inputFileCount++;
@@ -232,11 +236,15 @@ public class Files {
 
         int j = 0;
 
-        for (String arg : args) { //Добавить исключение для названия .txt
+        for (String arg : args) {
             if (arg.toLowerCase().contains(".txt")) {
                 inputFileNames[j] = arg;
                 j++;
             }
+        }
+
+        if(inputFileNames.length == 0){
+            System.out.println("Внимание: Вы не указали ни одного имени исходного файла в формате .txt\n");
         }
 
         ListItem[] conditions = new ListItem[inputFileNames.length];
@@ -250,8 +258,8 @@ public class Files {
         for (int i = 0; i < inputFileNames.length; i++) {
             try {
                 sources[i] = new Scanner(new FileInputStream(inputFileNames[i]));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                System.out.println("Ошибка: Указанный вами исходный файл не найден\n");
             }
         }
 
@@ -259,7 +267,9 @@ public class Files {
         int intVariable;
         double doubleVariable;
 
-        checkDirectory(outputFilenames, path, isInputOptionA);
+        if(inputFileNames.length != 0){
+            checkDirectory(outputFilenames, path, isInputOptionA);
+        }
 
         while (!isStop(conditions)) {
             try {
@@ -283,7 +293,8 @@ public class Files {
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                System.out.println("Ошибка чтения строки из файла\n");
+                break;
             }
         }
 
