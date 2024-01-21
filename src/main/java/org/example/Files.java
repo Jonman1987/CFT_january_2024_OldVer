@@ -174,7 +174,7 @@ public class Files {
     public static void main(String[] args) {
         Locale.setDefault(new Locale("en", "US")); // Use for dot
 
-        String[] outputFilenames = new String[]{"integers.txt", "floats.txt", "strings.txt"};
+        String[] outputFilenames = new String[]{"integers.txt", "instruction.txt", "strings.txt"};
 
         String path = "";
         int statisticCount = 0;
